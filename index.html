@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grocery Receipt Parser</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 50px;
+        }
+
+        #result {
+            margin-top: 20px;
+            width: 80%;
+            max-width: 500px;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Upload Grocery Receipt</h1>
+    <input type="file" id="receiptInput" accept="image/*">
+    <button onclick="uploadReceipt()">Upload and Parse</button>
+
+    <div id="result"></div>
+
+    <script>
+        async function uploadReceipt() {
+            const fileInput = document.getElementById('receiptInput');
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = "Processing...";
+
+            if (fileInput.files.length === 0) {
+                resultDiv.innerHTML = "Please upload a receipt image.";
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('receiptImage', fileInput.files[0]);
+
+            try {
+                const response = await fetch('/api/parse-receipt', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                resultDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                resultDiv.innerHTML = "Failed to process the receipt.";
+            }
+        }
+    </script>
+
+</body>
+
+</html>
